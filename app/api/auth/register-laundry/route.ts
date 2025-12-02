@@ -61,30 +61,20 @@ export async function POST(request: NextRequest) {
             is24h ? 1 : 0,
             is24h ? null : horaApertura,
             is24h ? null : horaCierre,
-            capacidadSimultanea,
+            capacidadSimultanea || 10,
             JSON.stringify(servicios),
             ],
         )
 
         const userId = (result as any).insertId
 
-        setTimeout(async () => {
-            try {
-            const conn = await pool.getConnection()
-            await conn.execute("UPDATE usuario_local SET estado = 'activa' WHERE id = ?", [userId])
-            conn.release()
-            console.log(`[GIRO] Laundry #${userId} auto-activated after validation period`)
-            } catch (error) {
-            console.error("[GIRO] Error auto-activating laundry:", error)
-            }
-        }, 60000)
+        console.log(`[GIRO] Laundry #${userId} registered, waiting for verification`)
 
         return NextResponse.json(
             {
-            message: "Lavandería registrada. Validando información...",
+            message: "Lavandería registrada exitosamente",
             userId,
             role: "laundry",
-            token: `token_${userId}_${Date.now()}`,
             },
             { status: 201 },
         )

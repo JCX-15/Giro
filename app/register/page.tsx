@@ -42,6 +42,11 @@ export default function RegisterPage() {
     e.preventDefault()
     setError("")
 
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres")
+      return
+    }
+
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden")
       return
@@ -152,7 +157,7 @@ export default function RegisterPage() {
         <RoleSelector selectedRole={role} onRoleChange={setRole} availableRoles={availableRoles} />
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-700 font-semibold mb-2 flex items-center gap-2">
                 <FontAwesomeIcon icon={faUser} className="text-[#012840]" />

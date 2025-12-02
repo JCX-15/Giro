@@ -1,30 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export default function LandingPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme")
-    if (savedTheme === "dark") {
-      setIsDarkMode(true)
-      document.documentElement.classList.add("dark-mode")
-    }
-  }, [])
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode)
-    if (isDarkMode) {
-      document.documentElement.classList.remove("dark-mode")
-      localStorage.setItem("theme", "light")
-    } else {
-      document.documentElement.classList.add("dark-mode")
-      localStorage.setItem("theme", "dark")
-    }
-  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -49,13 +29,6 @@ export default function LandingPage() {
           --text-dark: #1a1a1a;
           --text-light: #666666;
           --accent-green: #28a745;
-        }
-
-        html.dark-mode {
-          --white: #1a1a1a;
-          --light-bg: #0d0d0d;
-          --text-dark: #ffffff;
-          --text-light: #b0b0b0;
         }
 
         body {
@@ -109,6 +82,15 @@ export default function LandingPage() {
           }
         }
 
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
         .header {
           background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
           color: var(--white);
@@ -139,12 +121,18 @@ export default function LandingPage() {
           text-decoration: none;
           color: var(--white);
           animation: slideInRight 0.6s ease;
+          transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+          transform: scale(1.05);
         }
 
         .logo-img {
           width: 40px;
           height: 40px;
           border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
         }
 
         .nav {
@@ -160,7 +148,7 @@ export default function LandingPage() {
           text-decoration: none;
           font-size: 0.95rem;
           font-weight: 500;
-          transition: opacity 0.3s ease;
+          transition: all 0.3s ease;
           position: relative;
         }
 
@@ -173,6 +161,10 @@ export default function LandingPage() {
           height: 2px;
           background: var(--white);
           transition: width 0.3s ease;
+        }
+
+        .nav a:hover {
+          transform: translateY(-2px);
         }
 
         .nav a:hover::after {
@@ -197,7 +189,7 @@ export default function LandingPage() {
           transform: translateY(-2px);
         }
 
-        .theme-toggle, .mobile-menu-toggle {
+        .mobile-menu-toggle {
           background: rgba(255, 255, 255, 0.2);
           border: 1px solid rgba(255, 255, 255, 0.3);
           color: var(--white);
@@ -209,7 +201,7 @@ export default function LandingPage() {
           display: none;
         }
 
-        .theme-toggle:hover, .mobile-menu-toggle:hover {
+        .mobile-menu-toggle:hover {
           background: rgba(255, 255, 255, 0.3);
         }
 
@@ -261,6 +253,7 @@ export default function LandingPage() {
           margin-bottom: 1.5rem;
           letter-spacing: -0.5px;
           line-height: 1.2;
+          animation: fadeInUp 0.8s ease;
         }
 
         .hero p {
@@ -268,6 +261,7 @@ export default function LandingPage() {
           margin-bottom: 2.5rem;
           opacity: 0.95;
           line-height: 1.8;
+          animation: fadeInUp 1s ease;
         }
 
         .hero-buttons {
@@ -275,6 +269,7 @@ export default function LandingPage() {
           gap: 1.5rem;
           justify-content: center;
           flex-wrap: wrap;
+          animation: fadeInUp 1.2s ease;
         }
 
         .btn-hero-primary, .btn-hero-secondary {
@@ -345,19 +340,22 @@ export default function LandingPage() {
           padding: 2.5rem;
           border-radius: 15px;
           text-align: center;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           border: 1px solid transparent;
           animation: fadeInUp 0.6s ease;
+          animation-fill-mode: both;
         }
 
-        html.dark-mode .why-card {
-          background: #1a1a1a;
-          border-color: #333;
-        }
+        .why-card:nth-child(1) { animation-delay: 0.1s; }
+        .why-card:nth-child(2) { animation-delay: 0.2s; }
+        .why-card:nth-child(3) { animation-delay: 0.3s; }
+        .why-card:nth-child(4) { animation-delay: 0.4s; }
+        .why-card:nth-child(5) { animation-delay: 0.5s; }
+        .why-card:nth-child(6) { animation-delay: 0.6s; }
 
         .why-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 15px 40px rgba(1, 40, 64, 0.1);
+          transform: translateY(-10px) scale(1.02);
+          box-shadow: 0 15px 40px rgba(1, 40, 64, 0.15);
           border-color: var(--primary-light);
         }
 
@@ -372,6 +370,11 @@ export default function LandingPage() {
           justify-content: center;
           font-size: 2rem;
           color: var(--white);
+          transition: transform 0.3s ease;
+        }
+
+        .why-card:hover .why-icon {
+          transform: rotate(5deg) scale(1.1);
         }
 
         .why-card h3 {
@@ -405,8 +408,14 @@ export default function LandingPage() {
           margin-bottom: 3rem;
           align-items: flex-start;
           animation: fadeInUp 0.6s ease;
+          animation-fill-mode: both;
           position: relative;
         }
+
+        .step-item:nth-child(1) { animation-delay: 0.1s; }
+        .step-item:nth-child(2) { animation-delay: 0.3s; }
+        .step-item:nth-child(3) { animation-delay: 0.5s; }
+        .step-item:nth-child(4) { animation-delay: 0.7s; }
 
         .step-number {
           width: 80px;
@@ -421,6 +430,11 @@ export default function LandingPage() {
           color: var(--white);
           flex-shrink: 0;
           box-shadow: 0 8px 20px rgba(1, 40, 64, 0.2);
+          transition: transform 0.3s ease;
+        }
+
+        .step-item:hover .step-number {
+          transform: scale(1.1) rotate(5deg);
         }
 
         .step-content h3 {
@@ -467,14 +481,15 @@ export default function LandingPage() {
           border-radius: 15px;
           text-align: center;
           position: relative;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           border: 2px solid transparent;
           animation: fadeInUp 0.6s ease;
+          animation-fill-mode: both;
         }
 
-        html.dark-mode .pricing-card {
-          background: #1a1a1a;
-        }
+        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.3s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.5s; }
 
         .pricing-card.featured {
           border: 2px solid var(--primary-light);
@@ -485,6 +500,11 @@ export default function LandingPage() {
         .pricing-card:hover:not(.featured) {
           transform: translateY(-8px);
           box-shadow: 0 15px 40px rgba(1, 40, 64, 0.1);
+        }
+
+        .pricing-card.featured:hover {
+          transform: scale(1.08);
+          box-shadow: 0 25px 60px rgba(1, 40, 64, 0.2);
         }
 
         .pricing-badge {
@@ -499,6 +519,7 @@ export default function LandingPage() {
           font-size: 0.8rem;
           font-weight: 700;
           letter-spacing: 0.5px;
+          animation: pulse 2s ease-in-out infinite;
         }
 
         .pricing-name {
@@ -532,10 +553,11 @@ export default function LandingPage() {
           border-bottom: 1px solid rgba(1, 40, 64, 0.1);
           color: var(--text-light);
           font-size: 0.9rem;
+          transition: transform 0.2s ease;
         }
 
-        html.dark-mode .pricing-features li {
-          border-bottom-color: rgba(255, 255, 255, 0.1);
+        .pricing-features li:hover {
+          transform: translateX(5px);
         }
 
         .pricing-features li::before {
@@ -562,6 +584,7 @@ export default function LandingPage() {
         .btn-pricing:hover {
           background: var(--primary-light);
           transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(1, 40, 64, 0.3);
         }
 
         .cta {
@@ -602,6 +625,7 @@ export default function LandingPage() {
           transition: all 0.3s ease;
           font-size: 0.95rem;
           display: inline-block;
+          animation: fadeInUp 0.9s ease;
         }
 
         .btn-cta:hover {
@@ -636,11 +660,12 @@ export default function LandingPage() {
           text-decoration: none;
           margin-bottom: 0.5rem;
           font-size: 0.9rem;
-          transition: color 0.3s ease;
+          transition: all 0.3s ease;
         }
 
         .footer-section a:hover {
           color: var(--white);
+          transform: translateX(5px);
         }
 
         .footer-logo {
@@ -672,6 +697,7 @@ export default function LandingPage() {
         .social-icon:hover {
           background: var(--white);
           color: var(--primary);
+          transform: translateY(-3px) rotate(5deg);
         }
 
         .footer-bottom {
@@ -690,10 +716,11 @@ export default function LandingPage() {
           width: 100%;
           background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
           flex-direction: column;
-          gap: 1rem;
-          padding: 2rem;
+          gap: 0;
+          padding: 0;
           animation: slideInRight 0.3s ease;
           z-index: 999;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .mobile-nav.active {
@@ -703,8 +730,15 @@ export default function LandingPage() {
         .mobile-nav a {
           color: var(--white);
           text-decoration: none;
-          padding: 0.8rem 0;
+          padding: 1rem 2rem;
           font-weight: 500;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.3s ease;
+        }
+
+        .mobile-nav a:hover {
+          background: rgba(255, 255, 255, 0.1);
+          padding-left: 2.5rem;
         }
 
         @media (max-width: 768px) {
@@ -716,7 +750,7 @@ export default function LandingPage() {
             display: none;
           }
 
-          .theme-toggle, .mobile-menu-toggle {
+          .mobile-menu-toggle {
             display: block;
           }
 
@@ -831,11 +865,8 @@ export default function LandingPage() {
           </nav>
 
           <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            <button className="theme-toggle" onClick={toggleTheme}>
-              {isDarkMode ? "☀️" : "🌙"}
-            </button>
-            <Link href="/login" className="btn-login">
-              Iniciar Sesión
+            <Link href="/register" className="btn-login">
+              Únete Gratis
             </Link>
             <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
               ☰
@@ -865,8 +896,8 @@ export default function LandingPage() {
           <h1>Lavandería a Domicilio en Minutos</h1>
           <p>Recogemos, lavamos, planchamos y entregamos tu ropa. Tu solo relájate y disfruta de más tiempo libre.</p>
           <div className="hero-buttons">
-            <Link href="/dashboard" className="btn-hero-primary">
-              Solicitar Servicio
+            <Link href="/register" className="btn-hero-primary">
+              Únete Gratis
             </Link>
             <a href="#como-funciona" className="btn-hero-secondary">
               Ver Cómo Funciona

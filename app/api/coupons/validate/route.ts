@@ -40,8 +40,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
             valid: true,
-            percentage: coupon.porcentaje_descuento,
-            amount: coupon.monto_descuento,
+            discount: {
+                porcentaje_descuento: coupon.porcentaje_descuento,
+                monto_descuento: coupon.monto_descuento,
+            },
             message,
             },
             { status: 200 },

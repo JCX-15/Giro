@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
         query = "SELECT id, nombre FROM usuario_cliente WHERE correo = ? AND contrasena = ?"
         dbRole = "customer"
       } else if (role === "laundry") {
-        query = "SELECT id, nombre FROM usuario_local WHERE correo = ? AND contrasena = ?"
+        query = `SELECT id, nombre, estado, creado_en, 
+                 TIMESTAMPDIFF(SECOND, creado_en, NOW()) as seconds_since_creation 
+                 FROM usuario_local WHERE correo = ? AND contrasena = ?`
         dbRole = "laundry"
       } else {
         return NextResponse.json({ error: "Rol inválido" }, { status: 400 })
@@ -43,13 +45,44 @@ export async function POST(request: NextRequest) {
 
       const user = users[0]
 
+      if (role === "laundry") {
+        const timeSinceCreationSeconds = user.seconds_since_creation || 0
+
+        console.log(`[GIRO] Account #${user.id} created ${timeSinceCreationSeconds}s ago, estado: ${user.estado}`)
+
+        if (timeSinceCreationSeconds < 60 && user.estado === "pendiente") {
+          const remainingSeconds = 60 - timeSinceCreationSeconds
+          console.log(`[GIRO] Account #${user.id} still pending, ${remainingSeconds}s remaining`)
+          return NextResponse.json(
+            {
+              error: `Tu cuenta aún no ha sido verificada. Un encargado visitará tu dirección para validar tu empresa. Por favor, intenta nuevamente en ${remainingSeconds} segundos.`,
+            },
+            { status: 403 },
+          )
+        }
+
+        if (user.estado === "pendiente" && timeSinceCreationSeconds >= 60) {
+          await connection.execute("UPDATE usuario_local SET estado = 'activa' WHERE id = ?", [user.id])
+          console.log(`[GIRO] Laundry account #${user.id} auto-activated after ${timeSinceCreationSeconds} seconds`)
+        }
+
+        if (user.estado === "inactiva") {
+          return NextResponse.json(
+            {
+              error: "Tu cuenta está inactiva. Por favor, contacta al soporte.",
+            },
+            { status: 403 },
+          )
+        }
+      }
+
       return NextResponse.json(
         {
           message: "Inicio de sesión exitoso",
           userId: user.id,
           userName: user.nombre,
           role: dbRole,
-          token: `token_${user.id}_${Date.now()}`, // Simple token for MVP
+          token: `token_${user.id}_${Date.now()}`,
         },
         { status: 200 },
       )
